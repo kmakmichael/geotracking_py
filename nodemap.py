@@ -24,7 +24,6 @@ def load_edges(g, csv_file):
 
 
 def draw_graph(g, pt=()):
-    matplotlib.use('qtagg')
     # draw nodes
     fig, ax = plt.subplots()
     img = plt.imread("mapdata/gmap.png")
@@ -45,7 +44,6 @@ def draw_graph(g, pt=()):
 
 
 def n_graph(g):
-    matplotlib.use('qtagg')
     # draw nodes
     fig, ax = plt.subplots()
     img = plt.imread("mapdata/gmap.png")
