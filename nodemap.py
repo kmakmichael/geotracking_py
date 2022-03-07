@@ -4,6 +4,11 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 
+def node_pos(g, n):
+    rtup = (float(g.nodes[n]['lng']), float(g.nodes[n]['lat']))
+    return rtup
+
+
 def load_nodes(g, csv_file):
     with open(csv_file, newline='') as f:
         reader = csv.DictReader(f, delimiter=',')
