@@ -44,3 +44,19 @@ def draw_graph(g, pt=()):
     plt.show()
 
 
+def n_graph(g):
+    matplotlib.use('qtagg')
+    # draw nodes
+    fig, ax = plt.subplots()
+    img = plt.imread("mapdata/gmap.png")
+    ax.imshow(img, extent=[-121.3184, -121.3064, 37.9744, 37.9855])
+    for n in list(g.nodes):
+        plt.scatter(float(g.nodes[n]['lng']), float(g.nodes[n]['lat']), color='blue')
+
+    # draw lines
+    for e in list(g.edges):
+        x = [float(g.nodes[e[0]]['lng']), float(g.nodes[e[1]]['lng'])]
+        y = [float(g.nodes[e[0]]['lat']), float(g.nodes[e[1]]['lat'])]
+        plt.plot(x, y, color='blue')
+
+    return fig, ax
