@@ -15,7 +15,7 @@ if __name__ == '__main__':
     pt_a = 'mailroom' # replace /w whatever IPC we'll use. sys.argv[1], perhaps?
     pt_b = 'engcy_khourybaun'
     route = networkx.shortest_path(campus_map, pt_a, pt_b)
-    trip.navigate(campus_map, route)
+    nodemap.draw_graph(campus_map, pt=trip.navigate(campus_map, route))
 
 
 

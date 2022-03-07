@@ -6,6 +6,7 @@ def get_coords():
     for i in range(0, 20):
         try:
             msg = pynmea2.parse(ser.readline().decode("ascii"))
+            print(msg)
             if isinstance(msg, pynmea2.types.talker.RMC):
                 if msg.status == 'V':
                     continue

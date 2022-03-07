@@ -18,6 +18,8 @@ def navigate(m, route):
         pos = (0, 0)
         while distance(pos, nodemap.node_pos(m, target)) > tol:
             pos = gps.get_coords()
+            print(f'extracted coords ({pos[0]},{pos[1]})')
             record[0].append(pos[0])
             record[1].append(pos[1])
-            print(f'too far')
+        print(f'- - - > reached ({target}) @ ({pos[0]}, {pos[1]})')
+    return record
