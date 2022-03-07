@@ -5,8 +5,9 @@ def get_coords():
     ser = serial.Serial('/dev/ttyUSB0', baudrate=9600)
     while True:
         try:
-            msg = pynmea2.parse(ser.readline().decode("ascii"))
-            # print(msg)
+            line = ser.readline().decode("ascii")
+            # print(line)
+            msg = pynmea2.parse(line)
             if isinstance(msg, pynmea2.types.talker.RMC):
                 if msg.status == 'V':
                     print('no fix')
@@ -18,7 +19,8 @@ def get_coords():
             print(f'Device error: {e}')
             break
         except pynmea2.ParseError as e:
-            print(f'Parse error: {e}')
+            # print(f'Parse error: {e}')
+            continue
     return ()  # (181, 91)
 
 

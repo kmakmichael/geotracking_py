@@ -58,3 +58,26 @@ def n_graph(g):
         plt.plot(x, y, color='blue')
 
     return fig, ax
+
+
+def route_graph(g, r):
+    # draw nodes
+    fig, ax = plt.subplots()
+    img = plt.imread("mapdata/gmap.png")
+    ax.imshow(img, extent=[-121.3184, -121.3064, 37.9744, 37.9855])
+    for n in list(g.nodes):
+        if r.count(n) > 0:
+            plt.scatter(float(g.nodes[n]['lng']), float(g.nodes[n]['lat']), color='green')
+        else:
+            plt.scatter(float(g.nodes[n]['lng']), float(g.nodes[n]['lat']), color='blue')
+
+    # draw lines
+    for e in list(g.edges):
+        x = [float(g.nodes[e[0]]['lng']), float(g.nodes[e[1]]['lng'])]
+        y = [float(g.nodes[e[0]]['lat']), float(g.nodes[e[1]]['lat'])]
+        if r.count(e[0]) > 0 and r.count(e[1]) > 0:
+            plt.plot(x, y, color='green')
+        else:
+            plt.plot(x, y, color='blue')
+    plt.show()
+    return fig, ax

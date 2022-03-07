@@ -5,7 +5,7 @@ import nodemap
 import gps
 
 
-tol = 8e-6  # should probably be on a node-to-node basis via road width?
+tol = 8e-5  # should probably be on a node-to-node basis via road width?
 
 
 def distance(a, b):
@@ -32,8 +32,10 @@ def navigate(m, route):
     for target in route:
         print(f'heading towards "{target}"')
         while distance(pos, nodemap.node_pos(m, target)) > tol:
-            print(f'distance to node: {distance_m(pos, nodemap.node_pos(m, target))}m')
+        # for i in range(0,20):
             pos = gps.get_coords()
+            print(f'distance to {target}: {distance(pos, nodemap.node_pos(m, target))}m')
+            print(f'\t{pos}->{nodemap.node_pos(m, target)}')
             # print(f'extracted coords ({pos[0]},{pos[1]})')
             record[0].append(pos[0])
             record[1].append(pos[1])
