@@ -20,7 +20,7 @@ def distance_m(a, b):
 
 
 def navigate(m, route):
-    print(f'navigating route:\n{route}')
+    print(f'[navigation] navigating route:\n{route}')
     record = ([], [])
     pos = gps.get_coords()
     # plt.ion()
@@ -30,16 +30,16 @@ def navigate(m, route):
     # img = plt.imread("mapdata/gmap.png")
     # matplotlib.use('QtAgg')
     for target in route:
-        print(f'heading towards "{target}"')
+        print(f'[navigation] heading towards "{target}"')
         while distance(pos, nodemap.node_pos(m, target)) > tol:
         # for i in range(0,20):
             pos = gps.get_coords()
-            print(f'distance to {target}: {distance(pos, nodemap.node_pos(m, target))}m')
-            print(f'\t{pos}->{nodemap.node_pos(m, target)}')
+            # print(f'distance to {target}: {distance(pos, nodemap.node_pos(m, target))}m')
+            # print(f'\t{pos}->{nodemap.node_pos(m, target)}')
             # print(f'extracted coords ({pos[0]},{pos[1]})')
             record[0].append(pos[0])
             record[1].append(pos[1])
             # rt_line.set_data(pos[0], pos[1])
             # fig.canvas.draw_idle()
-        print(f'- - - > reached ({target}) @ ({pos[0]}, {pos[1]})')
+        # print(f'- - - > reached ({target}) @ ({pos[0]}, {pos[1]})')
     return record
