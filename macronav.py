@@ -5,14 +5,16 @@ import trip
 import gps
 from btcomms import BTComms
 
+cdir = "/home/bt/budgetTesla/macronav/geotracking_py"
+
 if __name__ == '__main__':
     print('[navigation] creating UDS')
     com = BTComms('N')
     print('[navigation] loading nodemap...')
     # load the node map
     campus_map = networkx.Graph()
-    nodemap.load_nodes(campus_map, "mapdata/nodes.csv")
-    nodemap.load_edges(campus_map, "mapdata/edges.csv")
+    nodemap.load_nodes(campus_map, f"{cdir}/mapdata/nodes.csv")
+    nodemap.load_edges(campus_map, f"{cdir}/mapdata/edges.csv")
     print('[navigation] successfully loaded map')
 
     print('[navigation] sending READY signal')
