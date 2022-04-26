@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import nodemap
 import gps
+from btcomms import BTComms
 
 
 tol = 8e-5  # should probably be on a node-to-node basis via road width?
@@ -23,12 +24,14 @@ def navigate(m, route):
     print(f'[navigation] navigating route:\n{route}')
     record = ([], [])
     pos = gps.get_coords()
+    com.send('GO')
     # plt.ion()
     # plt.show()
     # fig, ax = nodemap.n_graph(m)
     # rt_line, = ax.plot(pos[0], pos[1],'r')
     # img = plt.imread("mapdata/gmap.png")
     # matplotlib.use('QtAgg')
+    # TODO: send STOP if you lose your fix
     for target in route:
         print(f'[navigation] heading towards "{target}"')
         while distance(pos, nodemap.node_pos(m, target)) > tol:
@@ -42,4 +45,5 @@ def navigate(m, route):
             # rt_line.set_data(pos[0], pos[1])
             # fig.canvas.draw_idle()
         # print(f'- - - > reached ({target}) @ ({pos[0]}, {pos[1]})')
+    com.send('STOP')
     return record

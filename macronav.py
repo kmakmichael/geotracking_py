@@ -25,6 +25,7 @@ if __name__ == '__main__':
     # wait for a fix before we begin
     gps.fix()
     com.send('READY')
+    # TODO com.close()
     # start navigating
     #   in actuality, the first thing we need to do is find where we are and then get to point A
     #   so we'd need a function to do that, and then trip.navigate() a path here to A
