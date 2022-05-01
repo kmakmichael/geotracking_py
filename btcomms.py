@@ -16,6 +16,8 @@ class BTComms:
             print(f'error connecting to {self.target}')
             sys.exit(1)
 
+    def confirm(self):
+        self.send('R')
 
     # send a string
     def send(self, msg):

@@ -18,7 +18,7 @@ if __name__ == '__main__':
     print('[navigation] successfully loaded map')
 
     print('[navigation] sending READY signal')
-    com.send('READY')
+    com.confirm()
 
     pt_a = 'library' # replace /w whatever IPC we'll use. sys.argv[1], perhaps?
     pt_b = 'uc_fountain'
@@ -26,11 +26,12 @@ if __name__ == '__main__':
     # nodemap.route_graph(campus_map, route)
     # wait for a fix before we begin
     gps.fix()
-    com.send('READY')
+    com.send('G')
     # TODO com.close()
     # start navigating
     #   in actuality, the first thing we need to do is find where we are and then get to point A
     #   so we'd need a function to do that, and then trip.navigate() a path here to A
     #nodemap.draw_graph(campus_map, pt=trip.navigate(campus_map, route))
     trip.navigate(campus_map, route)
+    com.send('S')
 
