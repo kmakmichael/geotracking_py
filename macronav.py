@@ -26,14 +26,14 @@ def distance(a,b):
     return sqrt(abs(b[0]-a[0])**2 + abs(b[1]-a[1])**2)
 
 
-def navigate(m, route, com):
+def navigate(m, route, shmem):
     print(f'[navigation] navigating from {route[0]} to {route[-1]}')
     # record = ([], [])
-    print('[navigation] setting status to GO')
-    with status_lock and com_lock:
+    # print('[navigation] setting status to GO')
+    with status_lock:
         shmem["status"] = 1 # int(GPSStatus.GO)
-        com.send('G')
-    status_changed.set()
+        # com.send('G')
+        status_changed.set()
     pos = gps.get_coords()
     for target in route:
         # print(f'[navigation] heading towards {target}')
@@ -41,10 +41,10 @@ def navigate(m, route, com):
             pos = gps.get_coords()
             #record[0].append(pos[0])
             #record[1].append(pos[1])
-    with status_lock and com_lock:
+    with status_lock:
         shmem["status"] = GPSStatus.STOP
-        com.send('S')
-    status_changed.set()
+        # com.send('S')
+        status_changed.set()
     # return record
 
 def status_update(com, s):
@@ -62,32 +62,40 @@ if __name__ == '__main__':
     print('[navigation] loading nodemap...')
     # load the node map
     campus_map = networkx.Graph()
-    nodemap.load_nodes(campus_map, "mapdata/nodes.csv")
-    nodemap.load_edges(campus_map, "mapdata/edges.csv")
+    nodemap.load_nodes(campus_map, "mapdata/courtyard_improved_nodes.csv")
+    nodemap.load_edges(campus_map, "mapdata/courtyard_improved_edges.csv")
     print('[navigation] successfully loaded map')
 
     com = BTComms('N')
 
-    pt_a = 'library' # replace /w whatever IPC we'll use. sys.argv[1], perhaps?
-    pt_b = 'uc_fountain'
+    # set these on-the-fly
+    pt_a = '2636064209' # in front of Khoury
+    pt_b = '2674334939' # in front of Anderson corner
     route = networkx.shortest_path(campus_map, pt_a, pt_b)
     # nodemap.route_graph(campus_map, route)
     # wait for a fix before we begin
+    print('[navigation] waiting for a fix')
     # gps.fix()
-    print(f'[navigation] fix found')
+    print('[navigation] sending confirmation')
     com.confirm()
+    print('[navigation] recieved ACK')
     # start update timer
-    update = Thread(target=status_update, args=[com, shmem])
-    update.start()
+    # update = Thread(target=status_update, args=[com, shmem])
+    # update.start()
     # start navigating
     #   in actuality, the first thing we need to do is find where we are and then get to point A
     #   so we'd need a function to do that, and then trip.navigate() a path here to A
-    navigate(campus_map, route, com)
+    navi = Thread(target=navigate, args=[campus_map, route, shmem])
+    navi.start
+    # print('[navigation] sending initial GO')
+    # com.send('G')
+    # navigate(campus_map, route, com)
     while True:
         status_changed.wait()
+        print(f'[navigation] status changed: {shmem["status"]}')
         with status_lock and com_lock:
             if shmem["status"] == 1:
                 com.send('G')
             else:
                 com.send('S')
-        status_changed.clear()
+            status_changed.clear()

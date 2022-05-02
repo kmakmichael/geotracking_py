@@ -21,6 +21,8 @@ def get_coords():
         except pynmea2.ParseError as e:
             print(f'[navigation] Parse error: {e}')
             continue
+        except:
+            continue
     return ()  # (181, 91)
 
 
@@ -39,3 +41,4 @@ def fix():
             break
         except pynmea2.ParseError as e:
             print(f'\t[navigation] Parse error: {e}')
+            continue
