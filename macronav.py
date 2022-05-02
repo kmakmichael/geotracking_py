@@ -8,6 +8,7 @@ from threading import Thread, Event, Lock
 from enum import IntEnum
 from btcomms import BTComms
 
+cdir = '/home/bt/budgetTesla/macronav/geotracking_py'
 
 class GPSStatus(IntEnum):
     STOP = 0
@@ -36,6 +37,7 @@ def navigate(m, route, shmem):
         status_changed.set()
     pos = gps.get_coords()
     for target in route:
+        print(f'[navigation] coords: ({pos[0]}:{pos[1]},{pos[2]})')
         # print(f'[navigation] heading towards {target}')
         while distance(pos, nodemap.node_pos(m, target)) > tol:
             pos = gps.get_coords()
@@ -62,11 +64,11 @@ if __name__ == '__main__':
     print('[navigation] loading nodemap...')
     # load the node map
     campus_map = networkx.Graph()
-    nodemap.load_nodes(campus_map, "mapdata/courtyard_improved_nodes.csv")
-    nodemap.load_edges(campus_map, "mapdata/courtyard_improved_edges.csv")
+    nodemap.load_nodes(campus_map, f'{cdir}/mapdata/courtyard_improved_nodes.csv')
+    nodemap.load_edges(campus_map, f'{cdir}/mapdata/courtyard_improved_edges.csv')
     print('[navigation] successfully loaded map')
 
-    com = BTComms('N')
+    # com = BTComms('N')
 
     # set these on-the-fly
     pt_a = '2636064209' # in front of Khoury
@@ -77,7 +79,7 @@ if __name__ == '__main__':
     print('[navigation] waiting for a fix')
     # gps.fix()
     print('[navigation] sending confirmation')
-    com.confirm()
+    # com.confirm()
     print('[navigation] recieved ACK')
     # start update timer
     # update = Thread(target=status_update, args=[com, shmem])
@@ -86,7 +88,7 @@ if __name__ == '__main__':
     #   in actuality, the first thing we need to do is find where we are and then get to point A
     #   so we'd need a function to do that, and then trip.navigate() a path here to A
     navi = Thread(target=navigate, args=[campus_map, route, shmem])
-    navi.start
+    navi.start()
     # print('[navigation] sending initial GO')
     # com.send('G')
     # navigate(campus_map, route, com)
@@ -95,7 +97,7 @@ if __name__ == '__main__':
         print(f'[navigation] status changed: {shmem["status"]}')
         with status_lock and com_lock:
             if shmem["status"] == 1:
-                com.send('G')
+                pass #com.send('G')
             else:
-                com.send('S')
+                pass #com.send('S')
             status_changed.clear()
