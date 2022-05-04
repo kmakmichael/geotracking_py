@@ -1,7 +1,6 @@
 import networkx
 from math import sqrt
 import nodemap
-#import trip
 import gps
 import time
 from threading import Thread, Event, Lock
@@ -14,12 +13,13 @@ class GPSStatus(IntEnum):
     STOP = 0
     GO = 1
     TURN = 2
-status_lock = Lock()
+
 status_changed = Event()
-com_lock = Lock()
+status_lock = Lock()
 shmem = {
         "status": 0
         }
+
 tol = 8e-5
 
 
@@ -37,8 +37,7 @@ def navigate(m, route, shmem):
         status_changed.set()
     pos = gps.get_coords()
     for target in route:
-        print(f'[navigation] coords: ({pos[0]}:{pos[1]},{pos[2]})')
-        # print(f'[navigation] heading towards {target}')
+        print(f'[navigation] heading towards {target}')
         while distance(pos, nodemap.node_pos(m, target)) > tol:
             pos = gps.get_coords()
             #record[0].append(pos[0])
@@ -49,55 +48,47 @@ def navigate(m, route, shmem):
         status_changed.set()
     # return record
 
-def status_update(com, s):
-    while True:
-        time.sleep(2)
-        print(f'[navigation] sending update: {s["status"]}')
-        with status_lock and com_lock:
-            if s["status"] == 1:
-                com.send('G')
-            else:
-                com.send('S')
 
 
 if __name__ == '__main__':
-    print('[navigation] loading nodemap...')
     # load the node map
+    print('[navigation] loading nodemap...')
     campus_map = networkx.Graph()
     nodemap.load_nodes(campus_map, f'{cdir}/mapdata/courtyard_improved_nodes.csv')
     nodemap.load_edges(campus_map, f'{cdir}/mapdata/courtyard_improved_edges.csv')
     print('[navigation] successfully loaded map')
 
-    # com = BTComms('N')
 
     # set these on-the-fly
     pt_a = '2636064209' # in front of Khoury
     pt_b = '2674334939' # in front of Anderson corner
     route = networkx.shortest_path(campus_map, pt_a, pt_b)
     # nodemap.route_graph(campus_map, route)
+
     # wait for a fix before we begin
     print('[navigation] waiting for a fix')
-    # gps.fix()
+    gps.fix()
     print('[navigation] sending confirmation')
-    # com.confirm()
+    com = BTComms('N')
+    com.confirm()
     print('[navigation] recieved ACK')
     # start update timer
     # update = Thread(target=status_update, args=[com, shmem])
     # update.start()
+
     # start navigating
     #   in actuality, the first thing we need to do is find where we are and then get to point A
     #   so we'd need a function to do that, and then trip.navigate() a path here to A
     navi = Thread(target=navigate, args=[campus_map, route, shmem])
     navi.start()
-    # print('[navigation] sending initial GO')
-    # com.send('G')
-    # navigate(campus_map, route, com)
+    print('[navigation] sending initial GO')
+    com.send('G')
     while True:
         status_changed.wait()
         print(f'[navigation] status changed: {shmem["status"]}')
-        with status_lock and com_lock:
+        with status_lock:
             if shmem["status"] == 1:
-                pass #com.send('G')
+                com.send('G')
             else:
-                pass #com.send('S')
+                com.send('S')
             status_changed.clear()
